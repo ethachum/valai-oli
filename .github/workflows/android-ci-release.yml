@@ -34,6 +34,8 @@ jobs:
 
       - name: Run backend tests
         working-directory: ./backend
+        env:
+          PYTHONPATH: .
         run: python -m pytest tests/ -v
 
   # ── 2. Frontend build & lint ────────────────────────────────────────────
@@ -96,8 +98,8 @@ jobs:
         working-directory: ./frontend
         run: npx cap sync android
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Accept Android SDK licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Build debug APK
         working-directory: ./frontend/android
@@ -147,8 +149,8 @@ jobs:
         working-directory: ./frontend
         run: npx cap sync android
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Accept Android SDK licenses
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       # ── Signing ──────────────────────────────────────────────────────────
       # Requires these GitHub Actions secrets to be configured in the repository:
