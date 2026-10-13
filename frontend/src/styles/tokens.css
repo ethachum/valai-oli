@@ -1,0 +1,82 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Valaioli — Design Tokens
+   YouTube Dark Theme & Sharp Aesthetics
+═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Backgrounds (YouTube Dark Theme) ─────────────────────────────────── */
+  --bg:           #0f0f0f;
+  --bg-elevated:  #1e1e1e;
+  --bg-overlay:   #272727;
+  --bg-hover:     rgba(255, 255, 255, 0.08);
+
+  /* ── Borders ─────────────────────────────────────────────────────────── */
+  --line:         rgba(255, 255, 255, 0.12);
+  --line-strong:  rgba(255, 255, 255, 0.22);
+  --line-focus:   rgba(255, 255, 255, 0.45);
+
+  /* ── Text hierarchy (YouTube Typography Colors) ───────────────────────── */
+  --ink-strong:   #f1f1f1;
+  --ink:          #aaaaaa;
+  --muted:        #717171;
+  --faint:        #484848;
+
+  /* ── Invert (primary CTA) ────────────────────────────────────────────── */
+  --invert-bg:    #f1f1f1;
+  --invert-fg:    #0f0f0f;
+
+  /* ── Brand accent — YouTube Iconic Red ───────────────────────────────── */
+  --accent:       #ff0000;
+  --accent-dim:   #cc0000;
+  --accent-faint: rgba(255, 0, 0, 0.12);
+  --accent-line:  rgba(255, 0, 0, 0.40);
+
+  /* ── Semantic ────────────────────────────────────────────────────────── */
+  --success:      #2ba640;
+  --success-faint:rgba(43, 166, 64, 0.14);
+  --error:        #ff4e45;
+  --error-faint:  rgba(255, 78, 69, 0.14);
+  --warning:      #f57c00;
+
+  /* ── Typography ─────────────────────────────────────────────────────────── */
+  --font-sans:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', 'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+
+  /* ── Sizing ─────────────────────────────────────────────────────────────── */
+  --nav-height:   48px;
+  --max-content:  1280px;
+  --max-readable: 720px;
+  --radius:       0px;  /* Sharp corners */
+  --radius-sm:    0px;
+
+  /* ── Shadows ────────────────────────────────────────────────────────────── */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.5);
+  --shadow-md:  0 4px 16px rgba(0,0,0,0.6);
+  --shadow-lg:  0 8px 32px rgba(0,0,0,0.7);
+
+  /* ── Spacing scale ──────────────────────────────────────────────────────── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  28px;
+  --space-8:  32px;
+  --space-9:  40px;
+  --space-10: 48px;
+  --space-12: 64px;
+
+  /* ── Surfaces & Text aliases ────────────────────────────────────────────── */
+  --surface-1: #181818;
+  --surface-2: #212121;
+  --surface-3: #2b2b2b;
+  --text:      var(--ink-strong);
+
+  /* ── Transitions ────────────────────────────────────────────────────────── */
+  --dur-fast:   120ms;
+  --dur-mid:    200ms;
+  --dur-slow:   350ms;
+  --ease:       cubic-bezier(0.25, 0, 0, 1);
+}

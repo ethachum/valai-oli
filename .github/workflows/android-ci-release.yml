@@ -1,0 +1,301 @@
+name: Valaioli Android CI & Release
+
+on:
+  push:
+    branches: ["main", "master"]
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  pull_request:
+    branches: ["main", "master"]
+  schedule:
+    # Check for dependency updates Monday and Thursday at 06:00 UTC
+    - cron: "0 6 * * 1,4"
+
+jobs:
+
+  # ── 1. Backend tests (existing) ─────────────────────────────────────────
+  backend-tests:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Set up Python
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b  # v5.3.0
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest httpx
+
+      - name: Run backend tests
+        working-directory: ./backend
+        run: pytest tests/ -v
+
+  # ── 2. Frontend build & lint ────────────────────────────────────────────
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81b3d7993c63  # v4.2.0
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Upload frontend dist artifact
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1  # v4.6.1
+        with:
+          name: frontend-dist
+          path: frontend/dist/
+          retention-days: 7
+
+  # ── 3. Android debug APK build ──────────────────────────────────────────
+  android-debug-build:
+    runs-on: ubuntu-latest
+    needs: [frontend-build]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@7a6d8a8234af8eb26422e24e3006232cccaa061b  # v4.6.0
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81b3d7993c63  # v4.2.0
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Sync Capacitor Android
+        working-directory: ./frontend
+        run: npx cap sync android
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@00854ea68c109d98c75d956347303bf7c45b0277  # v3.2.1
+
+      - name: Build debug APK
+        working-directory: ./frontend/android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1  # v4.6.1
+        with:
+          name: valaioli-android-debug
+          path: frontend/android/app/build/outputs/apk/debug/*.apk
+          retention-days: 14
+
+  # ── 4. Android release APK (runs on stable version tags only) ───────────
+  android-release-build:
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-build]
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@7a6d8a8234af8eb26422e24e3006232cccaa061b  # v4.6.0
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81b3d7993c63  # v4.2.0
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      - name: Sync Capacitor Android
+        working-directory: ./frontend
+        run: npx cap sync android
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@00854ea68c109d98c75d956347303bf7c45b0277  # v3.2.1
+
+      # ── Signing ──────────────────────────────────────────────────────────
+      # Requires these GitHub Actions secrets to be configured in the repository:
+      #   ANDROID_KEYSTORE_BASE64  – base64-encoded JKS/PKCS12 keystore file
+      #   ANDROID_KEY_ALIAS        – key alias within the keystore
+      #   ANDROID_KEY_PASSWORD     – private key password
+      #   ANDROID_STORE_PASSWORD   – keystore store password
+      - name: Decode keystore
+        run: |
+          if [ -z "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 secret is not set. Cannot produce signed release APK."
+            exit 1
+          fi
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > /tmp/valaioli.keystore
+
+      - name: Build release APK (signed)
+        working-directory: ./frontend/android
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          SIGNING_STORE_FILE: /tmp/valaioli.keystore
+        run: |
+          chmod +x ./gradlew
+          ./gradlew assembleRelease --no-daemon \
+            -Pandroid.injected.signing.store.file="${SIGNING_STORE_FILE}" \
+            -Pandroid.injected.signing.store.password="${SIGNING_STORE_PASSWORD}" \
+            -Pandroid.injected.signing.key.alias="${SIGNING_KEY_ALIAS}" \
+            -Pandroid.injected.signing.key.password="${SIGNING_KEY_PASSWORD}"
+
+      - name: Rename APK artifacts with version
+        id: rename_apk
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          APK_SRC="frontend/android/app/build/outputs/apk/release"
+          mkdir -p release-artifacts
+          for apk in "$APK_SRC"/*.apk; do
+            filename=$(basename "$apk" .apk)
+            new_name="Valaioli-Android-${TAG}-${filename##app-}.apk"
+            cp "$apk" "release-artifacts/${new_name}"
+          done
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Calculate SHA-256 checksums
+        run: |
+          cd release-artifacts
+          sha256sum *.apk > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Write release manifest
+        run: |
+          TAG=${{ steps.rename_apk.outputs.tag }}
+          cat > release-artifacts/release-manifest.json << EOF
+          {
+            "application": "Valaioli",
+            "platform": "android",
+            "version": "${TAG}",
+            "commit": "${GITHUB_SHA}",
+            "buildTimestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "engine": {
+              "library": "io.github.junkfood02.youtubedl-android",
+              "libraryVersion": "0.18.1",
+              "ytDlpVersion": "dynamic-verified",
+              "ffmpegVersion": "embedded-android-kit"
+            },
+            "supportedAbis": ["arm64-v8a", "armeabi-v7a", "x86_64", "x86"],
+            "minSdkVersion": 23,
+            "targetSdkVersion": 35,
+            "license": "GPL-3.0"
+          }
+          EOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@c95fe1489396fe8a9eb87c0abf8aa5b2ef267fda  # v2.2.1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "Valaioli Android ${{ steps.rename_apk.outputs.tag }}"
+          draft: true
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            release-artifacts/*.apk
+            release-artifacts/SHA256SUMS.txt
+            release-artifacts/release-manifest.json
+          body: |
+            ## Valaioli Android ${{ steps.rename_apk.outputs.tag }}
+
+            ### Install Instructions
+            1. Download the APK for your device architecture (arm64-v8a recommended for modern phones)
+            2. On your Android device: **Settings → Security → Install unknown apps** and allow your file manager
+            3. Open the downloaded APK and tap Install
+
+            ### SHA-256 Verification
+            Verify your download matches the checksums in `SHA256SUMS.txt`.
+
+            ### Engine Versions
+            - **yt-dlp**: Dynamic (verified at runtime via youtubedl-android)
+            - **FFmpeg**: Bundled (Android-native shared library)
+
+            ### Disclaimer
+            Users are responsible for downloading only media they own or are authorized to save,
+            and for complying with applicable laws and service terms.
+            Valaioli is not affiliated with YouTube or any other media provider.
+
+  # ── 5. Dependency update monitor ────────────────────────────────────────
+  dependency-monitor:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Check yt-dlp latest release
+        id: ytdlp
+        run: |
+          LATEST=$(curl -fsSL \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/yt-dlp/yt-dlp/releases/latest \
+            | jq -r '.tag_name')
+          echo "Latest yt-dlp: $LATEST"
+          echo "version=$LATEST" >> $GITHUB_OUTPUT
+
+      - name: Check youtubedl-android latest on Maven Central
+        id: ytdl_android
+        run: |
+          LATEST=$(curl -fsSL \
+            "https://search.maven.org/solrsearch/select?q=g:io.github.junkfood02.youtubedl-android+AND+a:library&rows=1&wt=json" \
+            | jq -r '.response.docs[0].latestVersion')
+          echo "Latest youtubedl-android: $LATEST"
+          echo "version=$LATEST" >> $GITHUB_OUTPUT
+
+      - name: Write dependency check report
+        run: |
+          cat > dependency-report.txt << EOF
+          Valaioli Dependency Update Report
+          Generated: $(date -u)
+          ──────────────────────────────────
+          yt-dlp latest:              ${{ steps.ytdlp.outputs.version }}
+          youtubedl-android latest:   ${{ steps.ytdl_android.outputs.version }}
+          ──────────────────────────────────
+          Current pinned versions (android-engine.manifest.json):
+          $(cat config/android-engine.manifest.json)
+          EOF
+          cat dependency-report.txt
+
+      - name: Upload dependency report
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1  # v4.6.1
+        with:
+          name: dependency-update-report
+          path: dependency-report.txt
+          retention-days: 30

@@ -1,0 +1,405 @@
+/* ── DownloadHistoryPanel ───────────────────────────────────────────────────── */
+
+.dhp-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 400;
+  width: 360px;
+  max-height: 520px;
+  display: flex;
+  flex-direction: column;
+  background: hsl(220 20% 9% / 0.97);
+  border: 1px solid hsl(220 15% 20% / 0.6);
+  border-radius: 12px;
+  box-shadow:
+    0 8px 32px hsl(220 30% 5% / 0.7),
+    0 2px 8px hsl(220 30% 5% / 0.4),
+    inset 0 1px 0 hsl(220 20% 30% / 0.15);
+  backdrop-filter: blur(24px);
+  overflow: hidden;
+}
+
+/* Header -------------------------------------------------------------------- */
+
+.dhp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid hsl(220 15% 18% / 0.6);
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.dhp-header__title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary, hsl(220 15% 65%));
+  flex: 1;
+}
+
+.dhp-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dhp-header__clear {
+  background: none;
+  border: 1px solid hsl(220 15% 22% / 0.7);
+  border-radius: 6px;
+  color: hsl(220 15% 55%);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dhp-header__clear:hover {
+  border-color: hsl(220 15% 38%);
+  color: hsl(220 15% 78%);
+  background: hsl(220 15% 15% / 0.5);
+}
+
+.dhp-header__close {
+  background: none;
+  border: none;
+  color: hsl(220 15% 40%);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+  line-height: 1;
+}
+
+.dhp-header__close:hover {
+  color: hsl(220 15% 70%);
+}
+
+/* Bulk Action Bar (Download All) -------------------------------------------- */
+
+.dhp-bulk-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: hsl(220 18% 11% / 0.95);
+  border-bottom: 1px solid hsl(220 15% 18% / 0.8);
+  gap: 8px;
+}
+
+.dhp-bulk-bar__info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  color: hsl(220 15% 65%);
+}
+
+.dhp-bulk-bar__info strong {
+  color: hsl(140 60% 60%);
+  font-weight: 700;
+}
+
+.dhp-bulk-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dhp-bulk-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.dhp-bulk-btn--primary {
+  background: hsl(140 50% 24% / 0.5);
+  color: hsl(140 65% 65%);
+  border-color: hsl(140 40% 30% / 0.7);
+}
+
+.dhp-bulk-btn--primary:hover {
+  background: hsl(140 55% 32% / 0.75);
+  color: #fff;
+  border-color: hsl(140 60% 45%);
+  box-shadow: 0 0 10px hsl(140 50% 30% / 0.4);
+}
+
+.dhp-bulk-btn--zip {
+  background: hsl(220 15% 16% / 0.8);
+  color: hsl(220 15% 75%);
+  border-color: hsl(220 15% 24% / 0.8);
+}
+
+.dhp-bulk-btn--zip:hover {
+  background: hsl(220 15% 22%);
+  color: #fff;
+  border-color: hsl(220 15% 35%);
+}
+
+/* Empty state --------------------------------------------------------------- */
+
+.dhp-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  color: hsl(220 15% 40%);
+}
+
+/* Entry list ---------------------------------------------------------------- */
+
+.dhp-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: hsl(220 15% 20%) transparent;
+}
+
+.dhp-list::-webkit-scrollbar { width: 4px; }
+.dhp-list::-webkit-scrollbar-track { background: transparent; }
+.dhp-list::-webkit-scrollbar-thumb { background: hsl(220 15% 20%); border-radius: 2px; }
+
+/* Entry item ---------------------------------------------------------------- */
+
+.dhp-entry {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  border-bottom: 1px solid hsl(220 15% 15% / 0.4);
+  transition: background 0.12s ease;
+  position: relative;
+}
+
+.dhp-entry:last-child { border-bottom: none; }
+
+.dhp-entry:hover { background: hsl(220 15% 13% / 0.6); }
+
+/* State-based left accent bar */
+.dhp-entry::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 60%;
+  border-radius: 0 2px 2px 0;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.dhp-entry--active::before { background: var(--accent, hsl(260 80% 65%)); opacity: 1; }
+.dhp-entry--completed::before { background: hsl(140 60% 45%); opacity: 1; }
+.dhp-entry--failed::before { background: hsl(5 75% 55%); opacity: 1; }
+.dhp-entry--cancelled::before { background: hsl(35 80% 50%); opacity: 1; }
+
+/* Thumbnail ----------------------------------------------------------------- */
+
+.dhp-entry__thumb {
+  width: 48px;
+  height: 34px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: hsl(220 15% 15%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dhp-entry__thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dhp-entry__thumb-placeholder {
+  font-size: 0.75rem;
+  color: hsl(220 15% 35%);
+}
+
+/* Info ---------------------------------------------------------------------- */
+
+.dhp-entry__info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dhp-entry__title {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: hsl(220 15% 85%);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: 0;
+}
+
+.dhp-entry__meta {
+  font-size: 0.62rem;
+  color: hsl(220 15% 45%);
+  letter-spacing: 0.02em;
+}
+
+.dhp-entry--active .dhp-entry__meta { color: hsl(260 50% 60%); }
+.dhp-entry--completed .dhp-entry__meta { color: hsl(140 45% 42%); }
+.dhp-entry--failed .dhp-entry__meta { color: hsl(5 65% 50%); }
+.dhp-entry--cancelled .dhp-entry__meta { color: hsl(35 65% 48%); }
+
+.dhp-entry__error {
+  font-size: 0.6rem;
+  color: hsl(5 65% 52%);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+/* Progress bar -------------------------------------------------------------- */
+
+.dhp-bar {
+  height: 2px;
+  background: hsl(220 15% 18%);
+  border-radius: 1px;
+  overflow: hidden;
+  margin-top: 3px;
+}
+
+.dhp-bar__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent, hsl(260 80% 65%)), hsl(280 80% 70%));
+  border-radius: 1px;
+  transition: width 0.4s ease;
+}
+
+/* Action buttons ------------------------------------------------------------ */
+
+.dhp-entry__actions {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.dhp-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  line-height: 1;
+}
+
+.dhp-action-btn--download {
+  background: hsl(140 50% 28% / 0.35);
+  color: hsl(140 60% 60%);
+  border: 1px solid hsl(140 40% 25% / 0.6);
+}
+
+.dhp-action-btn--download:hover {
+  background: hsl(140 55% 38% / 0.6);
+  color: #fff;
+  border-color: hsl(140 60% 45%);
+}
+
+.dhp-action-btn--pause {
+  background: hsl(42 70% 25% / 0.4);
+  color: hsl(42 85% 65%);
+  border: 1px solid hsl(42 60% 30% / 0.6);
+}
+
+.dhp-action-btn--pause:hover {
+  background: hsl(42 80% 35% / 0.6);
+  color: #fff;
+  border-color: hsl(42 80% 50%);
+}
+
+.dhp-action-btn--resume {
+  background: hsl(140 50% 25% / 0.4);
+  color: hsl(140 70% 60%);
+  border: 1px solid hsl(140 50% 30% / 0.6);
+}
+
+.dhp-action-btn--resume:hover {
+  background: hsl(140 60% 35% / 0.6);
+  color: #fff;
+  border-color: hsl(140 70% 50%);
+}
+
+.dhp-action-btn--cancel,
+.dhp-action-btn--remove {
+  background: hsl(220 15% 15% / 0.7);
+  color: hsl(220 15% 55%);
+  border: 1px solid hsl(220 15% 22% / 0.7);
+}
+
+.dhp-action-btn--cancel:hover,
+.dhp-action-btn--remove:hover {
+  background: hsl(5 60% 30% / 0.5);
+  color: hsl(5 80% 70%);
+  border-color: hsl(5 50% 35% / 0.7);
+}
+
+.dhp-action-btn--retry {
+  background: hsl(35 80% 25% / 0.45);
+  color: hsl(35 90% 65%);
+  border: 1px solid hsl(35 70% 30% / 0.6);
+}
+
+.dhp-action-btn--retry:hover {
+  background: hsl(35 85% 35% / 0.7);
+  color: #fff;
+  border-color: hsl(35 85% 55%);
+  transform: rotate(-35deg);
+}
+
+/* Animation ----------------------------------------------------------------- */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.18s ease both;
+}
+
+/* Responsive ---------------------------------------------------------------- */
+
+@media (max-width: 400px) {
+  .dhp-panel {
+    width: calc(100vw - 24px);
+    right: 0;
+  }
+}

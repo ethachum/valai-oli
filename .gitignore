@@ -1,0 +1,66 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Valaioli — root .gitignore
+# ──────────────────────────────────────────────────────────────────────────────
+
+# ── Frontend ──────────────────────────────────────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ── Backend ───────────────────────────────────────────────────────────────────
+backend/__pycache__/
+backend/**/__pycache__/
+backend/.venv/
+backend/venv/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ── Dependency updater — runtime artifacts (never commit) ────────────────────
+logs/*
+staging/*
+tools/versions/*
+
+# Keep placeholder files so directories are tracked
+!logs/.gitkeep
+!staging/.gitkeep
+!tools/versions/yt-dlp/.gitkeep
+!tools/versions/ffmpeg/.gitkeep
+
+# ── Media / temporary outputs ─────────────────────────────────────────────────
+*.mp4
+*.mkv
+*.webm
+*.mp3
+*.m4a
+*.wav
+*.aac
+*.part
+*.ytdl
+*.zip
+*.tar.*
+
+# ── Secrets and environment ───────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# ── Editors ───────────────────────────────────────────────────────────────────
+.vscode/settings.json
+.idea/
+*.suo
+*.user
+.DS_Store
+Thumbs.db
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+desktop.ini

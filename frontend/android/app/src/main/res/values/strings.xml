@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Valaioli</string>
+    <string name="title_activity_main">Valaioli</string>
+    <string name="package_name">org.valaioli.app</string>
+    <string name="custom_url_scheme">org.valaioli.app</string>
+</resources>

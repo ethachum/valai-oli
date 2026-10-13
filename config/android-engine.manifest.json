@@ -1,0 +1,12 @@
+{
+  "application": "Valaioli",
+  "platform": "android",
+  "engine": {
+    "library": "io.github.junkfood02.youtubedl-android",
+    "libraryVersion": "0.18.1",
+    "ytDlpVersion": "dynamic-verified",
+    "ffmpegVersion": "4.4.1-android-kit",
+    "supportedAbis": ["arm64-v8a", "armeabi-v7a", "x86_64", "x86"],
+    "license": "GPL-3.0"
+  }
+}

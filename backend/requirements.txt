@@ -1,0 +1,26 @@
+# ── Valaioli Backend — Python dependencies ────────────────────────────────────
+# Pin versions for reproducibility. Update only through the review process.
+
+# Web framework
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+
+# Request/response validation
+pydantic==2.10.3
+pydantic-settings==2.6.1
+
+# Async support
+anyio==4.7.0
+httpx==0.28.0
+
+# Security
+python-multipart==0.0.20
+
+# Utilities
+aiofiles==24.1.0
+python-slugify==8.0.4
+
+# ── Development / testing ──────────────────────────────────────────────────────
+pytest==8.3.4
+pytest-asyncio==0.24.0
+httpx==0.28.0        # also used as async test client

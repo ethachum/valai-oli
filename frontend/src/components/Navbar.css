@@ -1,0 +1,162 @@
+/* ── Navbar ─────────────────────────────────────────────────────────────── */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: var(--nav-height);
+  background-color: rgba(12, 12, 13, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.navbar__inner {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  height: 100%;
+  max-width: var(--max-content);
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+@media (min-width: 640px) {
+  .navbar__inner { padding-inline: 32px; }
+}
+
+/* Brand */
+.navbar__brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__logo-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity var(--dur-fast) var(--ease);
+}
+.navbar__logo-btn:hover { opacity: 0.75; }
+
+.navbar__wordmark {
+  color: var(--ink-strong);
+  letter-spacing: 0.14em;
+}
+
+/* Right side */
+.navbar__right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.navbar__tag {
+  display: none;
+}
+@media (min-width: 480px) {
+  .navbar__tag { display: block; }
+}
+
+.navbar__mock-badge {
+  cursor: default;
+}
+
+/* Interactive badge-as-button for tool status toggle */
+.navbar__mock-badge--btn {
+  background: none;
+  border-style: solid;
+  font-family: var(--sans);
+  cursor: pointer;
+  transition: opacity 0.15s, box-shadow 0.15s;
+}
+.navbar__mock-badge--btn:hover {
+  opacity: 0.85;
+  box-shadow: 0 0 0 2px var(--accent-border);
+}
+.navbar__mock-badge--btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Download history button ─────────────────────────────────────────────── */
+
+.navbar__history-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: 1px solid hsl(220 15% 20% / 0.6);
+  border-radius: 8px;
+  color: hsl(220 15% 55%);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.navbar__history-btn:hover {
+  border-color: hsl(220 15% 35%);
+  color: hsl(220 15% 80%);
+  background: hsl(220 15% 14% / 0.5);
+}
+
+.navbar__history-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.navbar__history-btn[aria-expanded="true"] {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: hsl(260 60% 15% / 0.4);
+}
+
+.navbar__history-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  background: var(--accent, hsl(260 80% 65%));
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 700;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  animation: badge-pop 0.2s ease both;
+}
+
+@keyframes badge-pop {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.navbar__history-btn--active::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 10px;
+  border: 1px solid var(--accent, hsl(260 80% 65%));
+  opacity: 0.4;
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0%   { opacity: 0.4; transform: scale(1); }
+  50%  { opacity: 0.1; transform: scale(1.06); }
+  100% { opacity: 0.4; transform: scale(1); }
+}

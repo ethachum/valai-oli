@@ -1,0 +1,120 @@
+/* ── Metadata Card ───────────────────────────────────────────────────────── */
+
+.metadata-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+  overflow: hidden;
+}
+
+@media (min-width: 600px) {
+  .metadata-card {
+    flex-direction: row;
+    align-items: stretch;
+  }
+}
+
+/* ── Thumbnail ─────────────────────────────────────────────────────────── */
+.metadata-card__thumb-wrap {
+  position: relative;
+  flex-shrink: 0;
+  background-color: var(--bg-overlay);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+}
+
+@media (min-width: 600px) {
+  .metadata-card__thumb-wrap {
+    width: 260px;
+    aspect-ratio: unset;
+  }
+}
+
+@media (min-width: 900px) {
+  .metadata-card__thumb-wrap { width: 300px; }
+}
+
+.metadata-card__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.metadata-card__thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--faint);
+}
+
+.metadata-card__duration {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background-color: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  padding: 2px 7px;
+  font-size: 10px;
+}
+
+/* ── Info ──────────────────────────────────────────────────────────────── */
+.metadata-card__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 24px;
+  border-left: none;
+}
+
+@media (min-width: 600px) {
+  .metadata-card__info {
+    border-left: 1px solid var(--line);
+  }
+}
+
+.metadata-card__eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.metadata-card__change-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 10px;
+  transition: color var(--dur-fast) var(--ease);
+}
+.metadata-card__change-btn:hover { color: var(--ink); }
+
+.metadata-card__title {
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.metadata-card__uploader {
+  display: flex;
+  align-items: center;
+  color: var(--muted);
+}
+
+.metadata-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+}

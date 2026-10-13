@@ -1,0 +1,164 @@
+/* ── PlaylistQueuedCard.css ───────────────────────────────────────────────── */
+
+.pl-queued-card {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 36px 32px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 24px;
+}
+
+.pl-queued-card__glow-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(43, 166, 64, 0.12);
+  border: 1px solid rgba(43, 166, 64, 0.4);
+  color: var(--success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 24px rgba(43, 166, 64, 0.25);
+}
+
+.pl-queued-card__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.pl-queued-badge {
+  display: inline-flex;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(43, 166, 64, 0.12);
+  color: var(--success);
+  border: 1px solid rgba(43, 166, 64, 0.3);
+}
+
+.pl-queued-card__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink-strong);
+}
+
+.pl-queued-card__sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink);
+  max-width: 480px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pl-queued-card__sub strong {
+  color: var(--ink-strong);
+}
+
+/* ── Features List ────────────────────────────────────────────────────────── */
+
+.pl-queued-card__features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  padding: 16px 20px;
+}
+
+.pl-feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.pl-feature-icon {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.pl-feature-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pl-feature-text strong {
+  font-size: 13px;
+  color: var(--ink-strong);
+}
+
+.pl-feature-text span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.pl-feature-text code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 4px;
+}
+
+/* ── Actions ──────────────────────────────────────────────────────────────── */
+
+.pl-queued-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.pl-queued-btn-primary {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pl-queued-btn-primary:hover {
+  background: var(--accent-dim);
+  box-shadow: 0 4px 16px rgba(255, 0, 0, 0.4);
+}
+
+.pl-queued-btn-secondary {
+  padding: 12px 20px;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pl-queued-btn-secondary:hover {
+  background: var(--bg-hover);
+  color: var(--ink-strong);
+  border-color: var(--line-strong);
+}
