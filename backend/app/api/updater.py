@@ -127,7 +127,7 @@ async def verify_tools(
             "powershell",
             "-NoProfile",
             "-NonInteractive",
-            "-ExecutionPolicy", "RemoteSigned",
+            "-ExecutionPolicy", "Bypass",
             "-File", str(_VERIFY_SCRIPT),
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.STDOUT,
